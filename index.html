@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arena Beach Pro • Gerenciador de Torneios de Beach Tennis</title>
+  <title>SmashBeach Pro • Gerenciador de Torneios de Beach Tennis</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter & Plus Jakarta Sans -->
@@ -198,7 +198,7 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white">ARENA <span class="text-tennis-ball">BEACH</span></span>
+            <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white">SMASH<span class="text-tennis-ball">BEACH</span></span>
             <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sunset-orange text-white">Pro</span>
           </div>
           <p class="text-[11px] sm:text-xs text-slate-300 hidden xs:block">Gestão Inteligente de Torneios</p>
@@ -207,21 +207,53 @@
 
       <!-- Status / Ações Rápidas no Header -->
       <div class="flex items-center gap-2 sm:gap-3">
-        <div id="active-tournament-badge" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-ocean-800 border border-ocean-700 text-xs font-medium text-sand-200">
+        <button id="active-tournament-badge" onclick="promptRenameActiveTournament()" title="Clique para renomear este campeonato salvo" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-ocean-800 hover:bg-ocean-700 border border-ocean-700 text-xs font-medium text-sand-200 transition cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-tennis-ball animate-pulse"></span>
           <span id="header-tournament-name">Torneio Ativo</span>
-        </div>
-        <button id="btn-home" onclick="goHome()" class="hidden px-3 py-2 sm:px-4 sm:py-2 rounded-xl bg-ocean-800 hover:bg-ocean-700 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 border border-ocean-700">
-          <i class="fa-solid fa-house"></i>
-          <span class="hidden sm:inline">Início</span>
+          <i class="fa-solid fa-pen text-[10px] text-slate-400"></i>
         </button>
-        <button id="btn-reset-header" onclick="confirmResetTournament()" class="hidden px-3 py-2 sm:px-4 sm:py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 border border-rose-500/30">
-          <i class="fa-solid fa-rotate-right"></i>
-          <span class="hidden sm:inline">Novo Torneio</span>
+        <button id="btn-save-now" onclick="saveCurrentTournamentManually()" class="hidden px-3 py-2 sm:px-4 sm:py-2 rounded-xl bg-tennis-ball/20 hover:bg-tennis-ball text-tennis-ball hover:text-ocean-950 text-xs sm:text-sm font-bold transition flex items-center gap-2 border border-tennis-ball/40" title="Salvar alterações deste campeonato">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span class="hidden sm:inline">Salvar</span>
+        </button>
+        <button id="btn-home" onclick="goHome()" class="hidden px-3 py-2 sm:px-4 sm:py-2 rounded-xl bg-ocean-800 hover:bg-ocean-700 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 border border-ocean-700" title="Voltar para a tela inicial (o campeonato continua salvo)">
+          <i class="fa-solid fa-folder-open"></i>
+          <span class="hidden sm:inline">Meus Campeonatos</span>
+        </button>
+        <button id="btn-reset-header" onclick="confirmDeleteCurrentTournament()" class="hidden px-3 py-2 sm:px-4 sm:py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white text-xs sm:text-sm font-semibold transition flex items-center gap-2 border border-rose-500/30" title="Excluir este campeonato salvo">
+          <i class="fa-solid fa-trash-can"></i>
+          <span class="hidden sm:inline">Excluir</span>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Modal para Salvar / Renomear Campeonato -->
+  <div id="rename-tournament-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-ocean-950/75 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sand-200">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-11 h-11 rounded-2xl bg-ocean-900 text-tennis-ball flex items-center justify-center text-lg shrink-0">
+          <i class="fa-solid fa-bookmark"></i>
+        </div>
+        <div>
+          <h3 class="font-display font-extrabold text-lg text-ocean-900">Nome do Campeonato Salvo</h3>
+          <p class="text-xs text-slate-500">Identifique este campeonato para encontrá-lo facilmente depois.</p>
+        </div>
+      </div>
+      <form onsubmit="handleRenameTournamentSubmit(event)" class="space-y-4">
+        <input id="rename-tournament-input" type="text" required placeholder="Ex: Rei da Praia • Domingo Manhã" class="w-full px-4 py-3 rounded-xl border border-sand-300 bg-sand-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-ocean-sky text-sm font-bold text-ocean-900">
+        <div class="flex justify-end gap-2.5">
+          <button type="button" onclick="closeRenameModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs sm:text-sm transition">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-ocean-900 hover:bg-sunset-orange text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Salvar Nome</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Conteúdo Principal -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
@@ -245,23 +277,26 @@
           <p class="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed mb-6">
             Escolha o formato ideal para sua arena: rodízio dinâmico individual no <strong>Rei</strong> e <strong>Rainha da Praia</strong>, ou torneio tradicional com <strong>Chaves e Mata-Mata</strong> para duplas fixas.
           </p>
+        </div>
+      </div>
 
-          <!-- Botão para continuar torneio salvo se existir -->
-          <div id="resume-banner" class="hidden p-4 rounded-2xl bg-tennis-ball/15 border border-tennis-ball/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-tennis-ball text-ocean-950 flex items-center justify-center font-bold shrink-0">
-                <i class="fa-solid fa-play"></i>
-              </div>
-              <div>
-                <p class="text-xs uppercase tracking-wider text-tennis-ball font-bold">Torneio em andamento salvo</p>
-                <p id="resume-tournament-info" class="text-sm font-semibold text-white">Rei da Praia • 8 jogadores</p>
-              </div>
+      <!-- Meus Campeonatos Salvos -->
+      <div id="saved-tournaments-section" class="hidden glass-card rounded-3xl p-6 sm:p-7 border-2 border-tennis-ball/60 shadow-lg space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-sand-200">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-xl bg-ocean-900 text-tennis-ball flex items-center justify-center text-base shrink-0">
+              <i class="fa-solid fa-folder-open"></i>
             </div>
-            <button onclick="resumeSavedTournament()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-tennis-ball hover:bg-tennis-neon text-ocean-950 font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
-              <span>Continuar Torneio</span>
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
+            <div>
+              <h2 class="font-display font-extrabold text-lg sm:text-xl text-ocean-900">Campeonatos Salvos</h2>
+              <p class="text-xs text-slate-500">Seus campeonatos ficam salvos automaticamente. Clique para continuar de onde parou.</p>
+            </div>
           </div>
+          <span id="saved-tournaments-count" class="self-start sm:self-center px-3 py-1 rounded-full bg-ocean-900 text-tennis-ball text-xs font-extrabold">0 salvos</span>
+        </div>
+
+        <div id="saved-tournaments-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Cards de campeonatos salvos via JS -->
         </div>
       </div>
 
@@ -385,7 +420,7 @@
 
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nome do Torneio</label>
-              <input id="input-tournament-name" type="text" placeholder="Ex: Open Arena Sol de Verão" class="w-full px-4 py-2.5 rounded-xl border border-sand-300 bg-white focus:outline-none focus:ring-2 focus:ring-sunset-orange text-sm font-medium">
+              <input id="input-tournament-name" type="text" placeholder="Ex: Open SmashBeach Sol de Verão" class="w-full px-4 py-2.5 rounded-xl border border-sand-300 bg-white focus:outline-none focus:ring-2 focus:ring-sunset-orange text-sm font-medium">
             </div>
 
             <!-- Opções específicas para Torneio Normal -->
@@ -504,7 +539,7 @@
     <section id="view-tournament" class="hidden space-y-6">
 
       <!-- Barra Superior do Torneio -->
-      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-sand-200 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="glass-card rounded-3xl p-5 sm:p-6 border border-sand-200 shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-start sm:items-center gap-4">
           <div id="tourney-mode-icon" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-ocean-900 text-tennis-ball flex items-center justify-center text-2xl shrink-0 shadow-md">
             <i class="fa-solid fa-crown"></i>
@@ -513,110 +548,121 @@
             <div class="flex flex-wrap items-center gap-2 mb-1">
               <span id="tourney-mode-badge" class="px-2.5 py-0.5 rounded-full bg-sunset-light text-sunset-deep text-xs font-extrabold uppercase tracking-wider">Rei da Praia</span>
               <span id="tourney-progress-badge" class="px-2.5 py-0.5 rounded-full bg-sand-200 text-ocean-900 text-xs font-bold">0/0 Jogos Concluídos</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center gap-1">
+                <i class="fa-solid fa-cloud-check"></i> Salvo automaticamente
+              </span>
             </div>
-            <h2 id="tourney-display-name" class="font-display font-extrabold text-xl sm:text-2xl text-ocean-900">Open Arena Sol</h2>
+            <div class="flex items-center gap-2">
+              <h2 id="tourney-display-name" class="font-display font-extrabold text-xl sm:text-2xl text-ocean-900">Open SmashBeach Sol</h2>
+              <button onclick="promptRenameActiveTournament()" class="w-8 h-8 rounded-lg bg-sand-100 hover:bg-sand-200 text-slate-600 hover:text-ocean-900 flex items-center justify-center transition" title="Renomear campeonato">
+                <i class="fa-solid fa-pen text-xs"></i>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5">
-          <button onclick="openParticipantsManager()" class="px-4 py-2.5 rounded-xl bg-white hover:bg-sand-100 text-ocean-900 border-2 border-ocean-900/15 hover:border-ocean-900 font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2">
-            <i class="fa-solid fa-users-gear text-ocean-sky"></i>
+        <!-- Botões de Ação Pós-Sorteio -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openParticipantsManager()" class="px-3.5 py-2.5 rounded-xl bg-ocean-900 hover:bg-ocean-sky text-white font-bold text-xs transition flex items-center gap-2 shadow-sm">
+            <i class="fa-solid fa-users-gear text-tennis-ball"></i>
             <span id="btn-manage-participants-label">Gerenciar Participantes</span>
           </button>
-          <button id="btn-reshuffle-all" onclick="confirmFullReshuffle()" class="px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2" title="Sortear novamente todas as duplas/chaves mantendo os inscritos">
-            <i class="fa-solid fa-shuffle text-amber-700"></i>
+
+          <button onclick="confirmFullReshuffle()" class="px-3.5 py-2.5 rounded-xl bg-sunset-light hover:bg-orange-200 text-sunset-deep font-bold text-xs transition flex items-center gap-2 border border-orange-300">
+            <i class="fa-solid fa-shuffle"></i>
             <span>Sortear de Novo</span>
           </button>
-          <button id="btn-generate-knockout" onclick="advanceGroupsToKnockout()" class="hidden px-4 py-2.5 rounded-xl bg-sunset-orange hover:bg-sunset-deep text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+
+          <button id="btn-generate-knockout" onclick="advanceGroupsToKnockout()" class="hidden px-3.5 py-2.5 rounded-xl bg-tennis-ball hover:bg-tennis-neon text-ocean-950 font-extrabold text-xs transition flex items-center gap-2 shadow-sm">
             <i class="fa-solid fa-sitemap"></i>
             <span>Gerar Mata-Mata</span>
           </button>
-          <button id="btn-reset-knockout" onclick="confirmResetKnockout()" class="hidden px-4 py-2.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2" title="Zerar placares do mata-mata ou reconstruir chaves eliminatórias">
-            <i class="fa-solid fa-arrows-rotate text-rose-600"></i>
+
+          <button id="btn-reset-knockout" onclick="confirmResetKnockout()" class="hidden px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center gap-2 border border-rose-200">
+            <i class="fa-solid fa-rotate-left"></i>
             <span>Resetar Mata-Mata</span>
           </button>
-          <button onclick="showPodiumModal(true)" class="px-4 py-2.5 rounded-xl bg-ocean-900 hover:bg-ocean-800 text-tennis-ball font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
-            <i class="fa-solid fa-award"></i>
-            <span>Ver Pódio</span>
+
+          <button onclick="showPodiumModal(true)" class="px-3.5 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs transition flex items-center gap-2 border border-amber-300">
+            <i class="fa-solid fa-trophy text-amber-600"></i>
+            <span>Pódio</span>
           </button>
         </div>
       </div>
 
-      <!-- Banner de Pódio Campeão (Aparece automaticamente quando o torneio finaliza) -->
-      <div id="podium-banner" class="hidden rounded-3xl bg-gradient-to-r from-ocean-950 via-ocean-900 to-ocean-950 text-white p-6 sm:p-8 shadow-2xl border-2 border-tennis-ball relative overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(195,230,25,0.2),transparent_60%)] pointer-events-none"></div>
-        <div class="relative z-10">
-          <div class="text-center max-w-xl mx-auto mb-6">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tennis-ball text-ocean-950 font-extrabold text-xs uppercase tracking-wider mb-2">
-              <i class="fa-solid fa-trophy"></i> Torneio Finalizado
-            </span>
-            <h3 id="podium-headline" class="font-display font-extrabold text-2xl sm:text-3xl text-white">Pódio Oficial da Arena</h3>
+      <!-- Banner de Pódio Final (1º, 2º e 3º Lugares) -->
+      <div id="podium-banner" class="hidden rounded-3xl bg-gradient-to-br from-ocean-950 via-ocean-900 to-ocean-800 text-white p-6 sm:p-8 shadow-2xl border-2 border-tennis-ball space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/15 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-tennis-ball text-ocean-950 flex items-center justify-center text-2xl shadow-lg">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <span class="text-xs font-extrabold uppercase tracking-wider text-tennis-ball">Resultado Oficial</span>
+              <h3 id="podium-headline" class="font-display font-extrabold text-xl sm:text-2xl text-white">Pódio do Campeonato</h3>
+            </div>
           </div>
-
-          <div id="podium-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto items-end">
-            <!-- 2º Lugar, 1º Lugar, 3º Lugar renderizados via JS -->
-          </div>
+          <button onclick="document.getElementById('podium-banner').classList.add('hidden')" class="self-end sm:self-center px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-200 transition">
+            Ocultar Pódio
+          </button>
+        </div>
+        <div id="podium-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <!-- Renderizado via JS -->
         </div>
       </div>
 
-      <!-- =============================================================== -->
-      <!-- SUB-VIEW A: REI DA PRAIA & RAINHA DA PRAIA                      -->
-      <!-- =============================================================== -->
-      <div id="dashboard-king-queen" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Coluna Esquerda (7 cols): Rodadas e Partidas -->
-        <div class="lg:col-span-7 space-y-5">
+      <!-- DASHBOARD MODO 1 e 2: REI E RAINHA DA PRAIA -->
+      <div id="dashboard-king-queen" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Coluna Esquerda: Rodadas e Jogos -->
+        <div class="lg:col-span-7 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="font-display font-bold text-lg sm:text-xl text-ocean-900 flex items-center gap-2">
-              <i class="fa-solid fa-calendar-days text-sunset-orange"></i> Rodadas Sorteadas
+            <h3 class="font-display font-extrabold text-lg text-ocean-900 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-sunset-orange"></i> Rodadas & Confrontos
             </h3>
-            <span class="text-xs text-slate-500 font-medium">Insira os games e clique em Salvar</span>
+            <span class="text-xs text-slate-500 font-medium">Duplas sorteadas por rodada</span>
           </div>
-
-          <div id="kq-rounds-container" class="space-y-5">
-            <!-- Rodadas renderizadas via JS -->
+          <div id="kq-rounds-container" class="space-y-4">
+            <!-- Renderizado via JS -->
           </div>
         </div>
 
-        <!-- Coluna Direita (5 cols): Ranking Individual em Tempo Real -->
-        <div class="lg:col-span-5">
-          <div class="glass-card rounded-3xl p-5 sm:p-6 border border-sand-200 shadow-lg sticky top-24">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-display font-bold text-lg sm:text-xl text-ocean-900 flex items-center gap-2">
-                <i class="fa-solid fa-ranking-star text-tennis-dark"></i> Classificação Geral
-              </h3>
-              <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-sand-100 text-slate-600">Ao Vivo</span>
-            </div>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b-2 border-sand-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                    <th class="py-2.5 px-2">#</th>
-                    <th class="py-2.5 px-2">Atleta</th>
-                    <th class="py-2.5 px-2 text-center" title="Vitórias">V</th>
-                    <th class="py-2.5 px-2 text-center" title="Saldo de Games (Ganhos - Perdidos)">SG</th>
-                    <th class="py-2.5 px-2 text-center" title="Game Average (Aproveitamento)">AVG</th>
-                    <th class="py-2.5 px-2 text-center" title="Games Ganhos">GG</th>
-                  </tr>
-                </thead>
-                <tbody id="kq-ranking-tbody" class="divide-y divide-sand-100 text-sm">
-                  <!-- Ranking renderizado via JS -->
-                </tbody>
-              </table>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">
-              <strong>Regulamento CBT/CBBT:</strong> 1º Vitórias (V) • Empate duplo: Confronto Direto • Empate triplo+: Saldo de Games (SG) → Game Average (AVG) → Games Ganhos (GG).
-            </p>
+        <!-- Coluna Direita: Classificação Individual Oficial CBT -->
+        <div class="lg:col-span-5 glass-card rounded-3xl p-5 sm:p-6 border border-sand-200 shadow-md lg:sticky lg:top-24 space-y-4">
+          <div class="flex items-center justify-between border-b border-sand-200 pb-3">
+            <h3 class="font-display font-extrabold text-lg text-ocean-900 flex items-center gap-2">
+              <i class="fa-solid fa-ranking-star text-tennis-dark"></i> Classificação Individual
+            </h3>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-ocean-sky">Critério CBT</span>
           </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b-2 border-sand-200 text-[11px] font-extrabold uppercase text-slate-500">
+                  <th class="py-2 px-2">#</th>
+                  <th class="py-2 px-2">Atleta</th>
+                  <th class="py-2 px-2 text-center" title="Vitórias">V</th>
+                  <th class="py-2 px-2 text-center" title="Saldo de Games (GG - GP)">SG</th>
+                  <th class="py-2 px-2 text-center" title="Game Average">AVG</th>
+                  <th class="py-2 px-2 text-center" title="Games Ganhos">GG</th>
+                </tr>
+              </thead>
+              <tbody id="kq-ranking-tbody" class="divide-y divide-sand-100">
+                <!-- Renderizado via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-[11px] text-slate-400 leading-relaxed pt-2 border-t border-sand-200">
+            <strong>Ordem Oficial CBT/CBBT:</strong> Vitórias (V) → Confronto Direto (2 empatados) → Saldo de Games (SG) → Game Average (AVG) → Games Ganhos (GG).
+          </p>
         </div>
       </div>
 
-      <!-- =============================================================== -->
-      <!-- SUB-VIEW B: TORNEIO NORMAL (DUPLAS FIXAS: GRUPOS + MATA-MATA)   -->
-      <!-- =============================================================== -->
+      <!-- DASHBOARD MODO 3: TORNEIO NORMAL (CHAVES + MATA-MATA) -->
       <div id="dashboard-normal" class="hidden space-y-6">
-        <!-- Abas de Navegação: Fase de Grupos vs Mata-Mata -->
-        <div class="flex p-1.5 rounded-2xl bg-sand-200/80 max-w-md border border-sand-300">
+        <!-- Abas de Navegação: Fase de Chaves / Mata-Mata -->
+        <div class="p-1.5 rounded-2xl bg-sand-200/80 flex items-center gap-2 max-w-md">
           <button id="tab-normal-groups" onclick="switchNormalTab('groups')" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-ocean-900 text-white shadow">
             <i class="fa-solid fa-layer-group"></i>
             <span>Fase de Chaves</span>
@@ -627,48 +673,43 @@
           </button>
         </div>
 
-        <!-- Conteúdo Aba 1: Fase de Chaves (Grupos) -->
-        <div id="normal-groups-panel" class="space-y-8">
-          <div id="groups-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <!-- Cada Grupo com sua Tabela e Jogos é renderizado via JS -->
+        <!-- Painel Fase de Chaves -->
+        <div id="normal-groups-panel" class="space-y-6">
+          <div id="groups-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Renderizado via JS -->
+          </div>
+
+          <div class="glass-card rounded-3xl p-5 border border-sand-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-center sm:text-left">
+              <p class="font-display font-bold text-base text-ocean-900">Concluiu os jogos das chaves?</p>
+              <p class="text-xs text-slate-500">Avance automaticamente os 2 melhores de cada chave para Oitavas, Quartas, Semi, 3º Lugar e Final.</p>
+            </div>
+            <button id="btn-sync-knockout-inline" onclick="advanceGroupsToKnockout()" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-tennis-ball to-tennis-dark hover:from-tennis-neon hover:to-tennis-ball text-ocean-950 font-extrabold text-xs sm:text-sm shadow-md transition flex items-center gap-2 shrink-0">
+              <i class="fa-solid fa-sitemap"></i>
+              <span>Gerar / Atualizar Mata-Mata</span>
+            </button>
           </div>
         </div>
 
-        <!-- Conteúdo Aba 2: Fase Eliminatória (Mata-Mata) -->
+        <!-- Painel Mata-Mata -->
         <div id="normal-knockout-panel" class="hidden space-y-6">
-          <div id="knockout-empty-notice" class="hidden glass-card rounded-3xl p-8 text-center border border-sand-200">
-            <div class="w-16 h-16 rounded-2xl bg-sunset-light text-sunset-orange flex items-center justify-center text-2xl mx-auto mb-3">
-              <i class="fa-solid fa-hourglass-half"></i>
+          <div id="knockout-empty-notice" class="glass-card rounded-3xl p-10 border border-sand-200 text-center space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-sand-100 text-sunset-orange flex items-center justify-center text-3xl mx-auto">
+              <i class="fa-solid fa-sitemap"></i>
             </div>
-            <h4 class="font-display font-bold text-lg text-ocean-900 mb-1">Fase de Chaves em Andamento</h4>
-            <p class="text-sm text-slate-600 max-w-md mx-auto mb-5">
-              Conclua os jogos das chaves (ou clique no botão abaixo para fechar os grupos agora) para gerar automaticamente o chaveamento eliminatório.
-            </p>
-            <button onclick="advanceGroupsToKnockout()" class="px-5 py-3 rounded-xl bg-sunset-orange hover:bg-sunset-deep text-white font-bold text-sm shadow-md transition inline-flex items-center gap-2">
-              <i class="fa-solid fa-sitemap"></i> Fechar Chaves e Gerar Mata-Mata
+            <div class="max-w-md mx-auto space-y-1.5">
+              <h3 class="font-display font-extrabold text-xl text-ocean-900">Mata-Mata ainda não gerado</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Registre os placares na Fase de Chaves e clique no botão abaixo para montar automaticamente as eliminatórias e disputa de 3º lugar.</p>
+            </div>
+            <button onclick="advanceGroupsToKnockout()" class="px-6 py-3 rounded-2xl bg-ocean-900 hover:bg-sunset-orange text-white font-bold text-xs sm:text-sm shadow-md transition inline-flex items-center gap-2">
+              <i class="fa-solid fa-play"></i>
+              <span>Gerar Chave Eliminatória Agora</span>
             </button>
           </div>
 
-          <!-- Chaveamento Visual Responsivo -->
-          <div id="knockout-bracket-wrapper" class="bracket-scroll overflow-x-auto pb-4 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 rounded-2xl bg-sand-100 border border-sand-200">
-              <div class="flex items-center gap-2 text-xs text-slate-600 font-medium">
-                <i class="fa-solid fa-circle-info text-ocean-sky"></i>
-                <span>Altere placares nos grupos ou clique ao lado para sincronizar ou zerar a fase eliminatória.</span>
-              </div>
-              <div class="flex flex-wrap items-center gap-2">
-                <button id="btn-sync-knockout-inline" onclick="advanceGroupsToKnockout()" class="px-3.5 py-2 rounded-xl bg-sunset-orange hover:bg-sunset-deep text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
-                  <i class="fa-solid fa-rotate"></i>
-                  <span>Atualizar Mata-Mata</span>
-                </button>
-                <button onclick="confirmResetKnockout()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 font-bold text-xs transition flex items-center gap-1.5">
-                  <i class="fa-solid fa-eraser"></i>
-                  <span>Zerar Placares do Mata-Mata</span>
-                </button>
-              </div>
-            </div>
-            <div id="knockout-rounds-grid" class="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-full">
-              <!-- Colunas das Fases (Oitavas, Quartas, Semi, Final + 3º Lugar) via JS -->
+          <div id="knockout-bracket-wrapper" class="hidden bracket-scroll overflow-x-auto pb-4">
+            <div id="knockout-rounds-grid" class="flex items-stretch gap-6 min-w-max">
+              <!-- Colunas de Oitavas, Quartas, Semi, Final e 3º Lugar via JS -->
             </div>
           </div>
         </div>
@@ -683,7 +724,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-baseball text-tennis-ball"></i>
-        <span class="font-semibold text-white">Arena Beach Pro</span>
+        <span class="font-semibold text-white">SmashBeach Pro</span>
         <span>• Sistema de Gestão para Beach Tennis</span>
       </div>
       <p>Salvamento automático no navegador ativado</p>
@@ -695,13 +736,15 @@
   <!-- ===================================================================== -->
   <script>
     // =========================================================================
-    // ESTADO GLOBAL, PERSISTÊNCIA E UTILITÁRIOS DE UI
+    // ESTADO GLOBAL, PERSISTÊNCIA MÚLTIPLA E UTILITÁRIOS DE UI
     // =========================================================================
-    const STORAGE_KEY = 'arena_beach_pro_state_v1';
+    const STORAGE_KEY = 'smashbeach_pro_state_v2';
+    const LEGACY_STORAGE_KEYS = ['arena_beach_pro_state_v2', 'arena_beach_pro_state_v1'];
 
     let appState = {
       selectedMode: 'rei',
       setupList: [],
+      savedTournaments: [],
       activeTournament: null
     };
 
@@ -778,8 +821,18 @@
 
     function saveToStorage() {
       try {
+        if (appState.activeTournament) {
+          appState.activeTournament.updatedAt = new Date().toISOString();
+          const idx = appState.savedTournaments.findIndex(item => item.id === appState.activeTournament.id);
+          if (idx >= 0) {
+            appState.savedTournaments[idx] = appState.activeTournament;
+          } else {
+            appState.savedTournaments.unshift(appState.activeTournament);
+          }
+        }
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          activeTournament: appState.activeTournament
+          savedTournaments: appState.savedTournaments,
+          activeTournamentId: appState.activeTournament ? appState.activeTournament.id : null
         }));
       } catch (e) {
         console.warn('Não foi possível salvar no localStorage:', e);
@@ -789,10 +842,36 @@
     function loadFromStorage() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.activeTournament) {
-          appState.activeTournament = parsed.activeTournament;
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.savedTournaments)) {
+            appState.savedTournaments = parsed.savedTournaments;
+            if (parsed.activeTournamentId) {
+              appState.activeTournament = appState.savedTournaments.find(t => t.id === parsed.activeTournamentId) || null;
+            }
+            return;
+          }
+        }
+
+        // Migrar eventual torneio salvo na versão anterior
+        for (const legacyKey of LEGACY_STORAGE_KEYS) {
+          const legacyRaw = localStorage.getItem(legacyKey);
+          if (legacyRaw) {
+            const legacyParsed = JSON.parse(legacyRaw);
+            if (legacyParsed && Array.isArray(legacyParsed.savedTournaments)) {
+              appState.savedTournaments = legacyParsed.savedTournaments;
+              if (legacyParsed.activeTournamentId) {
+                appState.activeTournament = appState.savedTournaments.find(t => t.id === legacyParsed.activeTournamentId) || null;
+              }
+              saveToStorage();
+              break;
+            } else if (legacyParsed && legacyParsed.activeTournament) {
+              appState.savedTournaments = [legacyParsed.activeTournament];
+              appState.activeTournament = legacyParsed.activeTournament;
+              saveToStorage();
+              break;
+            }
+          }
         }
       } catch (e) {
         console.warn('Erro ao carregar dados salvos:', e);
@@ -811,59 +890,237 @@
 
       const btnHome = document.getElementById('btn-home');
       const btnReset = document.getElementById('btn-reset-header');
+      const btnSaveNow = document.getElementById('btn-save-now');
       const badge = document.getElementById('active-tournament-badge');
 
       if (viewName === 'home') {
         btnHome.classList.add('hidden');
         btnReset.classList.add('hidden');
+        btnSaveNow.classList.add('hidden');
         badge.classList.add('hidden');
         updateHomeResumeBanner();
       } else if (viewName === 'setup') {
         btnHome.classList.remove('hidden');
         btnReset.classList.add('hidden');
+        btnSaveNow.classList.add('hidden');
         badge.classList.add('hidden');
       } else if (viewName === 'tournament') {
         btnHome.classList.remove('hidden');
         btnReset.classList.remove('hidden');
+        btnSaveNow.classList.remove('hidden');
         badge.classList.remove('hidden');
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function updateHomeResumeBanner() {
-      const banner = document.getElementById('resume-banner');
-      const info = document.getElementById('resume-tournament-info');
-      const t = appState.activeTournament;
+    function getTournamentProgressSummary(t) {
+      let total = 0;
+      let done = 0;
+      if (t.mode === 'rei' || t.mode === 'rainha') {
+        (t.rounds || []).forEach(r => r.matches.forEach(m => {
+          total++;
+          if (m.completed) done++;
+        }));
+      } else {
+        (t.groups || []).forEach(g => g.matches.forEach(m => {
+          total++;
+          if (m.completed) done++;
+        }));
+        if (t.knockout) {
+          t.knockout.rounds.forEach(r => r.matches.forEach(m => {
+            if (!m.isBye) {
+              total++;
+              if (m.completed) done++;
+            }
+          }));
+          if (t.knockout.thirdPlaceMatch) {
+            total++;
+            if (t.knockout.thirdPlaceMatch.completed) done++;
+          }
+        }
+      }
+      return { done, total };
+    }
 
-      if (t) {
+    function updateHomeResumeBanner() {
+      const section = document.getElementById('saved-tournaments-section');
+      const listEl = document.getElementById('saved-tournaments-list');
+      const countEl = document.getElementById('saved-tournaments-count');
+      const saved = appState.savedTournaments || [];
+
+      if (saved.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      section.classList.remove('hidden');
+      countEl.textContent = `${saved.length} ${saved.length === 1 ? 'salvo' : 'salvos'}`;
+
+      // Ordenar do mais recentemente atualizado para o mais antigo
+      const sorted = [...saved].sort((a, b) => {
+        const da = new Date(a.updatedAt || a.createdAt || 0).getTime();
+        const db = new Date(b.updatedAt || b.createdAt || 0).getTime();
+        return db - da;
+      });
+
+      listEl.innerHTML = sorted.map(t => {
         const countLabel = t.mode === 'normal'
           ? `${t.teams.length} duplas`
           : `${t.players.length} atletas`;
-        info.textContent = `${t.name} • ${getModeLabel(t.mode)} (${countLabel})`;
-        banner.classList.remove('hidden');
-      } else {
-        banner.classList.add('hidden');
-      }
+        const prog = getTournamentProgressSummary(t);
+        const dateRef = t.updatedAt || t.createdAt;
+        const formattedDate = dateRef
+          ? new Date(dateRef).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+          : '';
+
+        const modeIcon = t.mode === 'rei'
+          ? '<i class="fa-solid fa-crown text-tennis-ball"></i>'
+          : t.mode === 'rainha'
+            ? '<i class="fa-solid fa-chess-queen text-sunset-coral"></i>'
+            : '<i class="fa-solid fa-trophy text-tennis-ball"></i>';
+
+        return `
+          <div class="rounded-2xl bg-sand-50 hover:bg-white border border-sand-200 hover:border-ocean-sky p-4 transition shadow-sm flex flex-col justify-between gap-3">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-ocean-900 flex items-center justify-center text-base shrink-0">
+                  ${modeIcon}
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-display font-extrabold text-sm sm:text-base text-ocean-900 truncate" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</h3>
+                  <p class="text-[11px] font-semibold text-slate-500">${getModeLabel(t.mode)} • ${countLabel}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button onclick="promptRenameSavedTournament('${t.id}')" class="w-7 h-7 rounded-lg bg-white hover:bg-sky-50 text-slate-400 hover:text-ocean-sky border border-sand-200 flex items-center justify-center transition" title="Renomear">
+                  <i class="fa-solid fa-pen text-[11px]"></i>
+                </button>
+                <button onclick="confirmDeleteSavedTournament('${t.id}')" class="w-7 h-7 rounded-lg bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-sand-200 flex items-center justify-center transition" title="Excluir campeonato">
+                  <i class="fa-solid fa-trash-can text-[11px]"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-sand-200/80">
+              <span class="font-bold text-ocean-900">${prog.done}/${prog.total} jogos</span>
+              ${formattedDate ? `<span>Atualizado: ${formattedDate}</span>` : ''}
+            </div>
+
+            <button onclick="openSavedTournament('${t.id}')" class="w-full py-2.5 px-4 rounded-xl bg-ocean-900 hover:bg-sunset-orange text-white font-bold text-xs transition flex items-center justify-center gap-2">
+              <span>Continuar Campeonato</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
     }
 
     function goHome() {
+      // Garante que o campeonato atual fique salvo antes de sair para a tela inicial
+      if (appState.activeTournament) {
+        saveToStorage();
+      }
       switchView('home');
     }
 
-    function resumeSavedTournament() {
-      if (!appState.activeTournament) return;
+    function openSavedTournament(id) {
+      const found = appState.savedTournaments.find(t => t.id === id);
+      if (!found) return;
+      appState.activeTournament = found;
+      saveToStorage();
       renderActiveTournament();
       switchView('tournament');
+      showToast(`Campeonato "${found.name}" carregado!`, 'success');
     }
 
-    function confirmResetTournament() {
+    function saveCurrentTournamentManually() {
+      if (!appState.activeTournament) return;
+      saveToStorage();
+      showToast(`Campeonato "${appState.activeTournament.name}" salvo com sucesso!`, 'success');
+    }
+
+    let renamingTargetId = null;
+
+    function promptRenameActiveTournament() {
+      if (!appState.activeTournament) return;
+      promptRenameSavedTournament(appState.activeTournament.id);
+    }
+
+    function promptRenameSavedTournament(id) {
+      const target = appState.savedTournaments.find(t => t.id === id) ||
+        (appState.activeTournament && appState.activeTournament.id === id ? appState.activeTournament : null);
+      if (!target) return;
+
+      renamingTargetId = id;
+      const modal = document.getElementById('rename-tournament-modal');
+      const input = document.getElementById('rename-tournament-input');
+      input.value = target.name;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 50);
+    }
+
+    function closeRenameModal() {
+      const modal = document.getElementById('rename-tournament-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      renamingTargetId = null;
+    }
+
+    function handleRenameTournamentSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('rename-tournament-input');
+      const newName = input.value.trim();
+      if (!newName || !renamingTargetId) return;
+
+      const savedItem = appState.savedTournaments.find(t => t.id === renamingTargetId);
+      if (savedItem) savedItem.name = newName;
+      if (appState.activeTournament && appState.activeTournament.id === renamingTargetId) {
+        appState.activeTournament.name = newName;
+      }
+
+      saveToStorage();
+      closeRenameModal();
+
+      if (!document.getElementById('view-tournament').classList.contains('hidden')) {
+        renderActiveTournament();
+      } else {
+        updateHomeResumeBanner();
+      }
+      showToast(`Campeonato salvo como "${newName}"!`, 'success');
+    }
+
+    function confirmDeleteCurrentTournament() {
+      if (!appState.activeTournament) return;
+      confirmDeleteSavedTournament(appState.activeTournament.id);
+    }
+
+    function confirmDeleteSavedTournament(id) {
+      const target = appState.savedTournaments.find(t => t.id === id);
+      const name = target ? target.name : 'este campeonato';
+
       showConfirmDialog(
-        'Iniciar Novo Torneio?',
-        'O torneio atual será substituído quando você iniciar um novo campeonato. Deseja voltar para a seleção de modalidades?',
+        'Excluir Campeonato Salvo?',
+        `Tem certeza que deseja excluir permanentemente "${name}"? Esta ação não pode ser desfeita.`,
         () => {
-          appState.activeTournament = null;
-          saveToStorage();
-          switchView('home');
+          appState.savedTournaments = appState.savedTournaments.filter(t => t.id !== id);
+          const wasActive = appState.activeTournament && appState.activeTournament.id === id;
+          if (wasActive) {
+            appState.activeTournament = null;
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            savedTournaments: appState.savedTournaments,
+            activeTournamentId: appState.activeTournament ? appState.activeTournament.id : null
+          }));
+          showToast(`Campeonato "${name}" excluído.`, 'info');
+          if (wasActive) {
+            switchView('home');
+          } else {
+            updateHomeResumeBanner();
+          }
         }
       );
     }
@@ -1104,7 +1361,7 @@
       if (mode === 'rei') {
         titleEl.textContent = 'Configurar Rei da Praia';
         subEl.textContent = 'Cadastre os jogadores. As duplas serão sorteadas a cada rodada!';
-        nameInput.value = 'Rei da Praia • Open Arena';
+        nameInput.value = 'Rei da Praia • SmashBeach Open';
         normalOpts.classList.add('hidden');
         kqOpts.classList.remove('hidden');
         formPlayer.classList.remove('hidden');
@@ -1114,7 +1371,7 @@
       } else if (mode === 'rainha') {
         titleEl.textContent = 'Configurar Rainha da Praia';
         subEl.textContent = 'Cadastre as jogadoras. Todas jogam com e contra todas!';
-        nameInput.value = 'Rainha da Praia • Sunset Cup';
+        nameInput.value = 'Rainha da Praia • SmashBeach Cup';
         normalOpts.classList.add('hidden');
         kqOpts.classList.remove('hidden');
         formPlayer.classList.remove('hidden');
@@ -1124,7 +1381,7 @@
       } else {
         titleEl.textContent = 'Configurar Torneio Normal';
         subEl.textContent = 'Cadastre as duplas fixas para divisão de chaves e mata-mata.';
-        nameInput.value = 'Open Duplas Fixas • Copa Areia';
+        nameInput.value = 'SmashBeach Open • Duplas Fixas';
         normalOpts.classList.remove('hidden');
         kqOpts.classList.add('hidden');
         formPlayer.classList.add('hidden');
